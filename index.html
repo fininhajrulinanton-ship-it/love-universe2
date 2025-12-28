@@ -99,17 +99,10 @@ const textlove = [
 ];
 const colors = ["#67e8ff","#ff7ad9","#9b7bff","#7affc7"];
 
-/* адаптивная плотность текста */
-function getMaxItems() {
-    const width = window.innerWidth;
-    if (width < 500) return 15;    // мобильные
-    if (width < 900) return 25;    // планшеты
-    return 40;                     // большие экраны
-}
+/* плотность плавающего текста */
+const maxItems = 40; // макс. слов на экране
 
-/* плавающий текст */
 function createItem(x = Math.random()*window.innerWidth) {
-    const maxItems = getMaxItems();
     if (document.querySelectorAll(".item").length >= maxItems) return;
 
     const el = document.createElement("div");
@@ -190,11 +183,6 @@ document.addEventListener("pointerdown", e => {
         musicStarted = true;
     }
     touchEffect(e.clientX, e.clientY);
-});
-
-/* обновление плотности при изменении размера окна */
-window.addEventListener("resize", () => {
-    // элементы сами удаляются через таймер, новые будут с учетом нового maxItems
 });
 </script>
 
