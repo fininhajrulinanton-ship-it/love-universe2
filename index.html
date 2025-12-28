@@ -14,6 +14,7 @@ html, body {
     overflow: hidden;
     background: radial-gradient(circle at top, #1b0033, #05000d);
     font-family: Arial, sans-serif;
+    touch-action: manipulation;
 }
 
 /* центральное свечение */
@@ -29,42 +30,54 @@ html, body {
     pointer-events: none;
 }
 
-/* элемент */
+/* элементы */
 .item {
     position: absolute;
     white-space: nowrap;
     animation: float linear infinite;
+    pointer-events: none;
 }
 
 /* текст */
 .text {
-    text-shadow: 0 0 8px rgba(120,220,255,0.7);
+    text-shadow: 0 0 10px rgba(120,220,255,0.8);
 }
 
-/* плавное движение */
+/* движение */
 @keyframes float {
-    from {
-        transform: translateY(120vh) translateX(0);
-    }
-    to {
-        transform: translateY(-140vh) translateX(-40px);
-    }
+    from { transform: translateY(120vh) translateX(0); }
+    to   { transform: translateY(-150vh) translateX(-50px); }
 }
 
 /* ❄️ снег */
 .snow {
     position: absolute;
-    width: 6px;
-    height: 6px;
     background: white;
     border-radius: 50%;
-    opacity: 0.6;
+    opacity: 0.7;
     animation: snow linear infinite;
+    pointer-events: none;
 }
 
 @keyframes snow {
     from { transform: translateY(-10vh); }
-    to { transform: translateY(110vh); }
+    to   { transform: translateY(110vh); }
+}
+
+/* 💥 вспышка */
+.flash {
+    position: fixed;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,160,220,0.6), transparent 70%);
+    pointer-events: none;
+    animation: flash 0.6s ease-out forwards;
+}
+
+@keyframes flash {
+    from { transform: scale(0.3); opacity: 1; }
+    to   { transform: scale(1.8); opacity: 0; }
 }
 </style>
 </head>
@@ -73,62 +86,91 @@ html, body {
 <div class="center-glow"></div>
 
 <!-- 🎄 музыка -->
-<audio id="music" loop>
+<audio id="music" loop preload="auto">
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-/* 💬 ТЕКСТЫ */
+/* 💬 тексты */
 const textlove = [
-    "Te amo ❤️","Amor de mi vida","Eres preciosa","My love",
-    "Me encantas","Mi vida","Te amo mucho","My baby",
-    "Eres mi todo","My heart","Siempre contigo","💖"
+ "Te amo ❤️","Amor de mi vida","Eres preciosa","My love",
+ "Me encantas","Mi vida","Te amo mucho","My baby",
+ "Eres mi todo","My heart","Siempre contigo","💖"
 ];
 
 const colors = ["#67e8ff","#ff7ad9","#9b7bff","#7affc7"];
 
-function createItem() {
+/* плавающий текст */
+function createItem(x = Math.random()*window.innerWidth) {
     const el = document.createElement("div");
     el.className = "item";
 
-    const layer = Math.random(); // глубина
+    const layer = Math.random();
     const duration = layer < 0.33 ? 30 : layer < 0.66 ? 22 : 14;
-    const sizeBoost = layer < 0.33 ? 0.7 : layer < 0.66 ? 1 : 1.5;
+    const sizeBoost = layer < 0.33 ? 0.7 : layer < 0.66 ? 1 : 1.6;
 
     const span = document.createElement("span");
     span.className = "text";
-    span.textContent = textlove[Math.floor(Math.random() * textlove.length)];
-    span.style.fontSize = (12 + Math.random()*18) * sizeBoost + "px";
-    span.style.color = colors[Math.floor(Math.random() * colors.length)];
+    span.textContent = textlove[Math.floor(Math.random()*textlove.length)];
+    span.style.fontSize = (12 + Math.random()*20) * sizeBoost + "px";
+    span.style.color = colors[Math.floor(Math.random()*colors.length)];
 
     el.appendChild(span);
-
-    el.style.left = Math.random() * 100 + "vw";
+    el.style.left = x + "px";
     el.style.animationDuration = duration + "s";
-    el.style.opacity = layer < 0.33 ? 0.4 : layer < 0.66 ? 0.7 : 0.95;
+    el.style.opacity = layer < 0.33 ? 0.4 : layer < 0.66 ? 0.75 : 1;
 
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 35000);
 }
 
-/* ❄️ снег */
+/* ❄️ снег (усилен) */
 function createSnow() {
     const s = document.createElement("div");
     s.className = "snow";
+
+    const size = 2 + Math.random()*4;
+    s.style.width = size + "px";
+    s.style.height = size + "px";
     s.style.left = Math.random()*100 + "vw";
-    s.style.animationDuration = 10 + Math.random()*10 + "s";
+    s.style.animationDuration = 8 + Math.random()*14 + "s";
+    s.style.opacity = 0.3 + Math.random()*0.6;
+
     document.body.appendChild(s);
-    setTimeout(() => s.remove(), 20000);
+    setTimeout(() => s.remove(), 22000);
 }
 
-/* ПЛОТНОСТЬ */
-setInterval(createItem, 100);
-setInterval(createSnow, 180);
+/* 💥 реакция на касание */
+function touchEffect(x, y) {
+    const f = document.createElement("div");
+    f.className = "flash";
+    f.style.left = (x - 60) + "px";
+    f.style.top = (y - 60) + "px";
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 600);
 
-/* 🎵 автозапуск */
-document.body.addEventListener("click", () => {
-    document.getElementById("music").play();
-}, { once: true });
+    for (let i = 0; i < 5; i++) {
+        createItem(x + (Math.random()*80 - 40));
+    }
+}
+
+/* плотность */
+setInterval(() => createItem(), 100);
+setInterval(createSnow, 100);
+
+/* 🎵 запуск музыки (громкость 10%) */
+let musicStarted = false;
+document.addEventListener("pointerdown", e => {
+    const music = document.getElementById("music");
+
+    if (!musicStarted) {
+        music.volume = 0.1;   // 🔊 10%
+        music.play();
+        musicStarted = true;
+    }
+
+    touchEffect(e.clientX, e.clientY);
+});
 </script>
 
 </body>
