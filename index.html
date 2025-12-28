@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Universe</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #1b0033, #05000d);
+    font-family: Arial, sans-serif;
+}
+
+/* центральное свечение */
+.center-glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(255,120,220,0.25), transparent 70%);
+    transform: translate(-50%, -50%);
+    filter: blur(30px);
+    pointer-events: none;
+}
+
+/* элемент */
+.item {
+    position: absolute;
+    white-space: nowrap;
+    animation: float linear infinite;
+}
+
+/* текст */
+.text {
+    text-shadow: 0 0 8px rgba(120,220,255,0.7);
+}
+
+/* плавное движение */
+@keyframes float {
+    from {
+        transform: translateY(120vh) translateX(0);
+    }
+    to {
+        transform: translateY(-140vh) translateX(-40px);
+    }
+}
+
+/* ❄️ снег */
+.snow {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: snow linear infinite;
+}
+
+@keyframes snow {
+    from { transform: translateY(-10vh); }
+    to { transform: translateY(110vh); }
+}
+</style>
+</head>
+<body>
+
+<div class="center-glow"></div>
+
+<!-- 🎄 музыка -->
+<audio id="music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* 💬 ТЕКСТЫ */
+const textlove = [
+    "Te amo ❤️","Amor de mi vida","Eres preciosa","My love",
+    "Me encantas","Mi vida","Te amo mucho","My baby",
+    "Eres mi todo","My heart","Siempre contigo","💖"
+];
+
+const colors = ["#67e8ff","#ff7ad9","#9b7bff","#7affc7"];
+
+function createItem() {
+    const el = document.createElement("div");
+    el.className = "item";
+
+    const layer = Math.random(); // глубина
+    const duration = layer < 0.33 ? 30 : layer < 0.66 ? 22 : 14;
+    const sizeBoost = layer < 0.33 ? 0.7 : layer < 0.66 ? 1 : 1.5;
+
+    const span = document.createElement("span");
+    span.className = "text";
+    span.textContent = textlove[Math.floor(Math.random() * textlove.length)];
+    span.style.fontSize = (12 + Math.random()*18) * sizeBoost + "px";
+    span.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+    el.appendChild(span);
+
+    el.style.left = Math.random() * 100 + "vw";
+    el.style.animationDuration = duration + "s";
+    el.style.opacity = layer < 0.33 ? 0.4 : layer < 0.66 ? 0.7 : 0.95;
+
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 35000);
+}
+
+/* ❄️ снег */
+function createSnow() {
+    const s = document.createElement("div");
+    s.className = "snow";
+    s.style.left = Math.random()*100 + "vw";
+    s.style.animationDuration = 10 + Math.random()*10 + "s";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 20000);
+}
+
+/* ПЛОТНОСТЬ */
+setInterval(createItem, 100);
+setInterval(createSnow, 180);
+
+/* 🎵 автозапуск */
+document.body.addEventListener("click", () => {
+    document.getElementById("music").play();
+}, { once: true });
+</script>
+
+</body>
+</html>
