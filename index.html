@@ -117,12 +117,12 @@ function createItem(x = Math.random()*window.innerWidth) {
 
     const layer = Math.random();
     const duration = layer < 0.33 ? 30 : layer < 0.66 ? 22 : 14;
-    const sizeBoost = layer < 0.33 ? 0.6 : layer < 0.66 ? 0.9 : 1.1; // уменьшили размеры
+    const sizeBoost = layer < 0.33 ? 0.7 : layer < 0.66 ? 1 : 1.3;
 
     const span = document.createElement("span");
     span.className = "text";
     span.textContent = textlove[Math.floor(Math.random()*textlove.length)];
-    span.style.fontSize = (10 + Math.random()*12) * sizeBoost + "px"; // уменьшенный диапазон
+    span.style.fontSize = (12 + Math.random()*16) * sizeBoost + "px";
     span.style.color = colors[Math.floor(Math.random()*colors.length)];
 
     el.appendChild(span);
@@ -194,7 +194,7 @@ document.addEventListener("pointerdown", e => {
 
 /* обновление плотности при изменении размера окна */
 window.addEventListener("resize", () => {
-    // новые элементы будут учитываться с новым maxItems
+    // элементы сами удаляются через таймер, новые будут с учетом нового maxItems
 });
 </script>
 
