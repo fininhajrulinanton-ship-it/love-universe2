@@ -91,13 +91,12 @@ html, body {
 </audio>
 
 <script>
-/* 💬 тексты */
+/* 💬 тексты и цвета */
 const textlove = [
  "Te amo ❤️","Amor de mi vida","Eres preciosa","My love",
  "Me encantas","Mi vida","Te amo mucho","My baby",
  "Eres mi todo","My heart","Siempre contigo","💖"
 ];
-
 const colors = ["#67e8ff","#ff7ad9","#9b7bff","#7affc7"];
 
 /* плавающий текст */
@@ -124,7 +123,7 @@ function createItem(x = Math.random()*window.innerWidth) {
     setTimeout(() => el.remove(), 35000);
 }
 
-/* ❄️ снег (усилен) */
+/* ❄️ снег */
 function createSnow() {
     const s = document.createElement("div");
     s.className = "snow";
@@ -140,7 +139,7 @@ function createSnow() {
     setTimeout(() => s.remove(), 22000);
 }
 
-/* 💥 реакция на касание */
+/* 💥 эффект касания */
 function touchEffect(x, y) {
     const f = document.createElement("div");
     f.className = "flash";
@@ -158,17 +157,27 @@ function touchEffect(x, y) {
 setInterval(() => createItem(), 100);
 setInterval(createSnow, 100);
 
-/* 🎵 запуск музыки (громкость 10%) */
+/* 🎵 музыка с плавным запуском на 10% громкости */
+const music = document.getElementById("music");
 let musicStarted = false;
-document.addEventListener("pointerdown", e => {
-    const music = document.getElementById("music");
 
+function fadeInMusic(targetVolume = 0.1, step = 0.005, interval = 50) {
+    music.volume = 0;
+    music.play();
+    const fade = setInterval(() => {
+        if (music.volume < targetVolume) {
+            music.volume = Math.min(music.volume + step, targetVolume);
+        } else {
+            clearInterval(fade);
+        }
+    }, interval);
+}
+
+document.addEventListener("pointerdown", e => {
     if (!musicStarted) {
-        music.volume = 0.1;   // 🔊 10%
-        music.play();
+        fadeInMusic();
         musicStarted = true;
     }
-
     touchEffect(e.clientX, e.clientY);
 });
 </script>
